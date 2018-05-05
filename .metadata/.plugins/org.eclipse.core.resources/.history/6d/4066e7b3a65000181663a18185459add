@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BattleShipsGame {
 	
@@ -193,7 +194,7 @@ public class BattleShipsGame {
 						}
 					} // otherwise let the player know
 					else {
-						System.out.println("You have already entered this position. Please choose another position.");
+						System.out.println("A ship has already been sunk here. Please choose another position.");
 						}
 				} // otherwise let the player know 
 				else {

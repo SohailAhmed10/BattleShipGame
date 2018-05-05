@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.Random;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class BattleShipsGame {
 	
@@ -65,18 +66,14 @@ public class BattleShipsGame {
 				compshipPlacement++;
 			}
 		}
-		//System.out.println(compShipsList);
+		System.out.println(compShipsList);
 	}
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		// welcome the user to the game and print the instructions
+		// welcome the user to the game
 		System.out.println("*** Welcome to the Battle Ships game ***");
-		System.out.println("** Instructions **");
-		System.out.println("You and the computer have five ships each to deploy.\n"
-				+ "After the battle starts, choose coordinates to attack the computer's ships.\n"
-				+ "Enter the coordinates within the range of 0 and 9 inclusive, while deploying ships as well as during the battle.\n"
-				+ "You win the game by sinking all the computer's ships before all your ships are sunk by the computer. Good luck!\n");
+		
 		System.out.println("The sea is empty right now");
 		System.out.print("\n");
 		// create a battleship board with size 10 by 10 using a 2D array
@@ -138,14 +135,13 @@ public class BattleShipsGame {
 		int compshipsLeft = 5;
 		// keep the battle going on until all the ships for one of the player or computer are destroyed
 		while (playershipsLeft != 0 && compshipsLeft != 0) {
-			// create a scanner class to get inputs from the player
-			Scanner input_guess = new Scanner(System.in);
 			// create a variable to check if the input is within the range
 			boolean player_input_inrange = false;
 			// create a variable to check if a ship has already been sunk in that position
-			boolean ship_not_sunk = false;
-			while (player_input_inrange != true || ship_not_sunk != true) {
+			boolean ship_sunk = false;
+			while (player_input_inrange != true || ship_sunk != true) {
 				// get the coordinate guesses from the player
+				Scanner input_guess = new Scanner(System.in);
 				System.out.println("Enter the X coordinate: ");
 				int player_x = input_guess.nextInt();
 				System.out.println("Enter the Y coordinate: ");
@@ -153,12 +149,11 @@ public class BattleShipsGame {
 				String player_input = Integer.toString(player_x) + Integer.toString(player_y);
 				// check if the value is within the range
 				if ((0 <= player_x && player_x <= 9) && (0 <= player_y && player_y <= 9)) {
-					// the player input is in range
 					player_input_inrange = true;
 					// check if a ship has already been sunk in that place
 					if (PlayerBattleShipBoard[player_x][player_y] == null || PlayerBattleShipBoard[player_x][player_y].equals(String.valueOf('@'))) {
-						// if the ship has not been sunk
-						ship_not_sunk = true;
+						ship_sunk = true;
+						// if not
 						// when the player sinks the computers ship
 						if (compShipsList.contains(player_input)){
 							// let the player know
@@ -168,6 +163,7 @@ public class BattleShipsGame {
 							PlayerBattleShipBoard[player_x][player_y] = String.valueOf('!');
 							// the computer loses one ship
 							compshipsLeft -= 1;
+							System.out.println(compshipsLeft);
 							// print the board
 							BattleShipsGame.printBoard(PlayerBattleShipBoard);
 						}
@@ -188,72 +184,66 @@ public class BattleShipsGame {
 							PlayerBattleShipBoard[player_x][player_y] = String.valueOf('x');
 							// the player loses one ship
 							playershipsLeft -= 1;
+							System.out.println(playershipsLeft);
 							// print the board
 							BattleShipsGame.printBoard(PlayerBattleShipBoard);
 						}
 					} // otherwise let the player know
 					else {
-						System.out.println("You have already entered this position. Please choose another position.");
-						}
+						//ship_sunk = false;
+						System.out.println("A ship has already been sunk here. Please choose another position.");
+						//break;
+					}
 				} // otherwise let the player know 
 				else {
 					System.out.println("The coordinate you entered does not exist. Please enter a coordinate between 0 and 9 inclusive.");
+					//break;
 				}
 			}
 
 			System.out.println("Now its the computer's turn");
-			//create an ArrayList recording the positions entered by the computer is an empty space
-			ArrayList<String> compemptyspaceList = new ArrayList<String>();
-			// create a random class
 			Random random = new Random();
-			// create a variable to check if a ship has already been sunk in the position chosen or if its an already chosen empty space
-			boolean comp_pos_ok = false;
-			while (comp_pos_ok != true) {
-				//make the computer choose coordinates randomly
-				int comp_x = random.nextInt(9);
-				int comp_y = random.nextInt(9);
-				String comp_input = Integer.toString(comp_x) + Integer.toString(comp_y);
-				// check if a ship has already been sunk in that place or the computer has already hit that empty space
-				if (PlayerBattleShipBoard[comp_x][comp_y] == null || PlayerBattleShipBoard[comp_x][comp_y].equals(String.valueOf('@')) || compemptyspaceList.contains(comp_input)) {
-					comp_pos_ok = true;
-					// when the computer sinks one of its own ships
-					if (compShipsList.contains(comp_input)) {
-						// let the player know
-						System.out.println("The Computer sunk one of its own ships");
-						// indicate it in the board
-						//ComputerBattleShipBoard[comp_x][comp_y] = String.valueOf('!');
-						PlayerBattleShipBoard[comp_x][comp_y] = String.valueOf('!');
-						// the computer loses one ship
-						compshipsLeft -= 1;
-						//System.out.println(compshipsLeft);
-						// print the board
-						BattleShipsGame.printBoard(PlayerBattleShipBoard);
-					}
-					// when the computer hits an empty space
-					else if (PlayerBattleShipBoard[comp_x][comp_y] == null) {
-						// add that position to compemptyspaceList
-						compemptyspaceList.add(comp_input);
-						// let the player know
-						System.out.println("Computer missed");
-						// indicate it in the map
-						//PlayerBattleShipBoard[comp_x][comp_y] = String.valueOf('-');
-						// print the board
-						BattleShipsGame.printBoard(PlayerBattleShipBoard);
-					}
-					// when the computer sinks the players ship
-					else if (PlayerBattleShipBoard[comp_x][comp_y].equals(String.valueOf('@'))) {
-						// let the player know
-						System.out.println("The Computer sunk one of your ships");
-						// indicate it in the board
-						PlayerBattleShipBoard[comp_x][comp_y] = String.valueOf('x');
-						// the player loses one ship
-						playershipsLeft -= 1;
-						//System.out.println(playershipsLeft);
-						// print the board
-						BattleShipsGame.printBoard(PlayerBattleShipBoard);
-					}
+			int comp_x = random.nextInt(9);
+			int comp_y = random.nextInt(9);
+			String comp_input = Integer.toString(comp_x) + Integer.toString(comp_y);
+			
+			// check if a ship has already been sunk in that place
+			if (PlayerBattleShipBoard[comp_x][comp_y] == null || PlayerBattleShipBoard[comp_x][comp_y].equals(String.valueOf('@'))) {
+				// when the computer sinks one of its own ships
+				if (compShipsList.contains(comp_input)) {
+					// let the player know
+					System.out.println("The Computer sunk one of its own ships");
+					// indicate it in the board
+					//ComputerBattleShipBoard[comp_x][comp_y] = String.valueOf('!');
+					PlayerBattleShipBoard[comp_x][comp_y] = String.valueOf('!');
+					// the computer loses one ship
+					compshipsLeft -= 1;
+					System.out.println(compshipsLeft);
+					// print the board
+					BattleShipsGame.printBoard(PlayerBattleShipBoard);
 				}
-			}
+				// when the computer hits an empty space
+				else if (PlayerBattleShipBoard[comp_x][comp_y] == null) {
+					// let the player know
+					System.out.println("Computer missed");
+					// indicate it in the map
+					PlayerBattleShipBoard[comp_x][comp_y] = String.valueOf('-');
+					// print the board
+					BattleShipsGame.printBoard(PlayerBattleShipBoard);
+				}
+				// when the computer sinks the players ship
+				else if (PlayerBattleShipBoard[comp_x][comp_y].equals(String.valueOf('@'))) {
+					// let the player know
+					System.out.println("The Computer sunk one of your ships");
+					// indicate it in the board
+					PlayerBattleShipBoard[comp_x][comp_y] = String.valueOf('x');
+					// the player loses one ship
+					playershipsLeft -= 1;
+					System.out.println(playershipsLeft);
+					// print the board
+					BattleShipsGame.printBoard(PlayerBattleShipBoard);
+				}
+			} 
 		}
 		if (compshipsLeft == 0) {
 			System.out.println("Hooray! You win the battle :)");
